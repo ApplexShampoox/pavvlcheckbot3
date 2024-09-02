@@ -1,0 +1,35 @@
+# Ignore node_modules
+node_modules/
+
+# Ignore environment variables file
+.env
+
+# Ignore session database file
+session_db.json
+
+# Ignore log files
+*.log
+
+# Ignore temporary files
+*.tmp
+*.temp
+
+# Ignore downloaded files
+*.xlsx
+*.xls
+
+# Ignore result files
+result.txt
+
+# Ignore VSCode settings
+.vscode/
+
+# Ignore MacOS system files
+.DS_Store
+
+# Ignore Windows system files
+Thumbs.db
+
+# Ignore IDE-specific files
+.idea/
+*.iml
