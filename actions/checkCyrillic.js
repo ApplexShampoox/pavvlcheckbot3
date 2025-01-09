@@ -19,7 +19,7 @@ async function checkCyrillic(ctx, workbook) {
 
     for (let i = 1; i < dataDiag.length; i++) { // Начинаем с i = 1, чтобы пропустить заголовок
       const row = dataDiag[i];
-      const columnsToCheckDiag = [1, 7, 19]; // Столбцы B, H, T (индексы 1, 7, 19)
+      const columnsToCheckDiag = [2, 6, 19]; // Столбцы B, H, T (индексы 1, 7, 19)
 
       columnsToCheckDiag.forEach(colIdx => {
         const cell = row[colIdx];

@@ -13,7 +13,7 @@ async function checkServiceCodes(ctx, workbook) {
     const diagData = xlsx.utils.sheet_to_json(diagSheet, { header: 1 });
 
     for (let i = 1; i < diagData.length; i++) {
-      const serviceCode = diagData[i][7]; // Столбец H
+      const serviceCode = diagData[i][6]; // Столбец H
       if (serviceCode !== undefined && !allowedValues.includes(String(serviceCode).trim())) {
         result.push(
           `Лист ${diagSheetName}: значение "${serviceCode}" в столбце H (строка ${i + 1}) не входит в список допустимых значений.`
@@ -25,13 +25,13 @@ async function checkServiceCodes(ctx, workbook) {
   }
 
   // Проверяем лист "Профильный специалист"
-  const treatmentSheetName = 'Профильный специалист';
+  const treatmentSheetName = 'Профильный врач';
   if (workbook.SheetNames.includes(treatmentSheetName)) {
     const treatmentSheet = workbook.Sheets[treatmentSheetName];
     const treatmentData = xlsx.utils.sheet_to_json(treatmentSheet, { header: 1 });
 
     for (let i = 1; i < treatmentData.length; i++) {
-      const serviceCode = treatmentData[i][2]; // Столбец C
+      const serviceCode = treatmentData[i][1]; // Столбец C
       if (serviceCode !== undefined && !allowedValues.includes(String(serviceCode).trim())) {
         result.push(
           `Лист ${treatmentSheetName}: значение "${serviceCode}" в столбце C (строка ${i + 1}) не входит в список допустимых значений.`

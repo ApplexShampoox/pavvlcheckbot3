@@ -25,7 +25,7 @@ async function checkICDCodes(ctx, workbook) {
 
     for (let i = 1; i < data.length; i++) { // Пропускаем первую строку с заголовками
       const row = data[i];
-      const codesCell = row[1]; // Столбец B (индекс 2)
+      const codesCell = row[2]; // Столбец B (индекс 2)
 
       if (codesCell) {
         // Разбиваем коды на отдельные значения и проверяем их

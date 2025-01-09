@@ -22,7 +22,7 @@ async function checkIdName(ctx, workbook) {
     for (let i = 1; i < data.length; i++) { // Пропускаем первую строку с заголовками
       const row = data[i];
       const valueA = row[0]; // Столбец A
-      const valueC = row[2]; // Столбец C
+      const valueC = row[1]; // Столбец B
 
       // Пропуск пустых строк или строк с пустыми значениями
       if (!valueA || !valueC) continue;
@@ -31,7 +31,7 @@ async function checkIdName(ctx, workbook) {
       if (valueAToC[valueA]) {
         if (valueAToC[valueA] !== valueC) {
           result.push(
-            `Несоответствие на листе ${sheetName}: значение "${valueA}" в столбце A связано с несколькими значениями столбца C: "${valueAToC[valueA]}" и "${valueC}" (строка ${i + 1})`
+            `Несоответствие на листе ${sheetName}: значение "${valueA}" в столбце A связано с несколькими значениями столбца B: "${valueAToC[valueA]}" и "${valueC}" (строка ${i + 1})`
           );
         }
       } else {
@@ -42,7 +42,7 @@ async function checkIdName(ctx, workbook) {
       if (valueCToA[valueC]) {
         if (valueCToA[valueC] !== valueA) {
           result.push(
-            `Несоответствие на листе ${sheetName}: значение "${valueC}" в столбце C связано с несколькими значениями столбца A: "${valueCToA[valueC]}" и "${valueA}" (строка ${i + 1})`
+            `Несоответствие на листе ${sheetName}: значение "${valueC}" в столбце B связано с несколькими значениями столбца A: "${valueCToA[valueC]}" и "${valueA}" (строка ${i + 1})`
           );
         }
       } else {

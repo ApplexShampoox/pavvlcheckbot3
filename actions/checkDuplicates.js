@@ -18,21 +18,28 @@ async function checkDuplicates(ctx, workbook) {
   // Пропускаем первую строку с заголовками и начинаем с первой строки данных
   for (let i = 1; i < data.length; i++) {
     const row = data[i];
-    const key = `${row[0]}|${row[3]}|${row[13]}`; // Создаем уникальный ключ из столбцов A, D, N
+    if (!row) continue;
+
+    const key = `${row[0]}|${row[3]}|${row[4]}`; // Создаем уникальный ключ из столбцов A, D, E
 
     if (!duplicates.has(key)) {
-      duplicates.set(key, { valueH: row[7], rows: [i + 1] });
+      duplicates.set(key, { valuesH: new Map(), rows: [i + 1] });
+      duplicates.get(key).valuesH.set(row[6], [i + 1]); // Добавляем значение H и строку
     } else {
       const existingEntry = duplicates.get(key);
-      existingEntry.rows.push(i + 1);
 
-      // Если значение в столбце H такое же, как и в предыдущей строке с тем же ключом
-      if (existingEntry.valueH === row[7]) {
+      if (existingEntry.valuesH.has(row[6])) {
+        const conflictingRows = existingEntry.valuesH.get(row[6]);
+        conflictingRows.push(i + 1);
+
         result.push(
-          `Лист "${sheetName}", строки ${existingEntry.rows.join(
+          `Лист "${sheetName}", строки ${conflictingRows.join(
             ', '
-          )} имеют одинаковые значения в столбцах A, D, N, но также одинаковое значение в столбце H: "${row[7]}"`
+          )} имеют одинаковые значения в столбцах A, D, E, а также одинаковое значение в столбце H: "${row[6]}"`
         );
+      } else {
+        existingEntry.valuesH.set(row[6], [i + 1]); // Добавляем новое значение в H
+        existingEntry.rows.push(i + 1); // Добавляем текущую строку в список
       }
     }
   }

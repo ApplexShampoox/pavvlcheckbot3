@@ -15,45 +15,47 @@ async function checkGroupsDiag(ctx, workbook) {
   const sheet = workbook.Sheets[sheetName];
   const data = xlsx.utils.sheet_to_json(sheet, { header: 1 });
 
-  // Объект для хранения групп по значениям A, D и J
+  // Объект для хранения групп по значениям A, D, E, I и J
   const groups = {};
 
   for (let i = 1; i < data.length; i++) { // Пропускаем первую строку с заголовками
     const row = data[i];
-    const valueA = row[0]; // Значение в столбце A
-    const valueD = row[3]; // Значение в столбце D
-    const valueJ = row[9]; // Значение в столбце J
-    const valueK = row[10]; // Значение в столбце K
+    const valueA = String(row[0] || '').trim(); // Значение в столбце A
+    const valueD = String(row[3] || '').trim(); // Значение в столбце D
+    const valueE = String(row[4] || '').trim(); // Значение в столбце E
+    const valueI = String(row[8] || '').trim(); // Значение в столбце I
+    const valueJ = String(row[9] || '').trim(); // Значение в столбце J
 
-    // Пропускаем строки, где A, D или J не заполнены
-    if (!valueA || !valueD || !valueJ) continue;
+    const groupKey = `${valueA}_${valueD}_${valueE}_${valueI}`;
 
-    const groupKey = `${valueA}_${valueD}_${valueJ}`;
+    // Пропускаем строки, где I пустой
+    if (!valueI) continue;
 
     // Инициализация группы, если не существует
     if (!groups[groupKey]) {
       groups[groupKey] = {
         rows: [],
-        filledKCount: 0,
+        filledJCount: 0,
       };
     }
 
     // Добавляем строку в группу
-    groups[groupKey].rows.push({ rowNumber: i + 1, valueK });
+    groups[groupKey].rows.push({ rowNumber: i + 1, valueJ });
 
-    // Увеличиваем счетчик заполненных K
-    if (valueK && valueK.trim() !== '') {
-      groups[groupKey].filledKCount++;
+    // Увеличиваем счётчик строк с заполненным столбцом J
+    if (valueJ) {
+      groups[groupKey].filledJCount++;
     }
   }
 
-  // Проверка групп на наличие только одной строки с заполненным столбцом K
+  // Проверка групп на наличие только одной строки с заполненным столбцом J
   Object.keys(groups).forEach((groupKey) => {
     const group = groups[groupKey];
 
-    if (group.filledKCount !== 1) {
+    // Проводим проверку только для групп, где столбец I не пустой
+    if (group.filledJCount !== 1) {
       const rows = group.rows.map(r => `строка ${r.rowNumber}`).join(', ');
-      result.push(`Несоответствие на листе ${sheetName}: группа с значениями A, D и J "${groupKey.replace(/_/g, ', ')}" должна содержать одну строку с заполненным K, но найдено ${group.filledKCount} (строки: ${rows})`);
+      result.push(`Несоответствие на листе ${sheetName}: группа с значениями A, D, E, I "${groupKey.replace(/_/g, ', ')}" должна содержать одну строку с заполненным J, но найдено ${group.filledJCount} (строки: ${rows})`);
     }
   });
 
