@@ -1,3 +1,5 @@
+//Забирает первый столбец первого листа и превращает значения в массив строк
+
 const fs = require('fs');
 const XLSX = require('xlsx');
 
@@ -15,7 +17,10 @@ function extractFirstColumnToJS(xlsxFilePath, jsFilePath) {
     const sheetData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
 
     // Извлекаем первый столбец (если есть данные)
-    const firstColumn = sheetData.map(row => row[0]).filter(value => value !== undefined);
+    const firstColumn = sheetData
+      .map(row => row[0])
+      .filter(value => value !== undefined)
+      .map(value => String(value)); // Преобразуем всё в строки
 
     // Генерируем содержимое JS файла
     const jsContent = `const data = ${JSON.stringify(firstColumn)};\n\nmodule.exports = data;\n`;
@@ -30,8 +35,8 @@ function extractFirstColumnToJS(xlsxFilePath, jsFilePath) {
 }
 
 // Укажите пути к файлам
-const xlsxFilePath = './Услуги По 804Н.xlsx'; // Исходный Excel файл
-const jsFilePath = './output.js';   // Итоговый JS файл
+const xlsxFilePath = '../input.xlsx'; // Исходный Excel файл
+const jsFilePath = '../output.js';   // Итоговый JS файл
 
 // Запуск функции
 extractFirstColumnToJS(xlsxFilePath, jsFilePath);

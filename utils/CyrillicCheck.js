@@ -1,3 +1,4 @@
+//Проверяет наличие кириллицы в первом листе
 const xlsx = require('xlsx');
 
 function checkCyrillicInFirstColumn(filePath) {
@@ -35,5 +36,5 @@ function checkCyrillicInFirstColumn(filePath) {
 }
 
 // Укажите путь к вашему Excel-файлу
-const filePath = './Услуги По 804Н.xlsx';
+const filePath = '../input.xlsx';
 checkCyrillicInFirstColumn(filePath);

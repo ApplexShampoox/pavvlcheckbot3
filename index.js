@@ -33,6 +33,9 @@ const { checkAEFMapping } = require('./actions/checkAEFMapping');
 const { checkGroupsDiag } = require('./actions/checkGroupsDiag');
 const { checkServiceCodes } = require('./actions/checkServiceCodes');
 const { checkUniqueMappingsTreatment } = require('./actions/checkUniqueMappingsTreatment');
+const { checkColumnDifference } = require('./actions/checkColumnDifference');
+const { validateChildrenConditions } = require('./actions/validateChildrenConditions');
+const { validateUniqueIDs } = require('./actions/validateUniqueIDs');
 
 // При старте бота добавляем кнопку для вызова каждой функции
 bot.start((ctx) => {
@@ -46,7 +49,13 @@ bot.start((ctx) => {
     [Markup.button.callback('Проверка на уникальность Группа-Порядок (Лечение)', 'checkUniqueMappingsTreatment')],
     [Markup.button.callback('Проверка на наличие одной основной альтернативы (Диагностика)', 'checkGroupsDiag')],
     [Markup.button.callback('Проверка на валидность 804 кода', 'checkServiceCodes')],
-    [Markup.button.callback('Проверка на заполненность обязательных столбцов', 'checkRequiredColumns')]
+    [Markup.button.callback('Проверка на заполненность обязательных столбцов', 'checkRequiredColumns')],
+    [Markup.button.callback('Проверка на корректность заполнения возраста', 'checkColumnDifference')],
+    [Markup.button.callback('Проверка на корректность заполнения возраста во всем шаблоне', 'validateChildrenConditions')],
+    [Markup.button.callback('Проверка на корректность заполнения ИД на всех листах', 'validateUniqueIDs')]
+
+
+
   ]));
 });
 
@@ -101,6 +110,24 @@ bot.action('checkServiceCodes', (ctx) => {
   ctx.session.waitingForFile = 'checkServiceCodes';
 });
 
+bot.action('checkColumnDifference', (ctx) => {
+  ctx.reply('Загрузите xlsx файл для проверки корректность заполнения возраста.');
+  ctx.session.waitingForFile = 'checkColumnDifference';
+});
+
+
+bot.action('validateChildrenConditions', (ctx) => {
+  ctx.reply('Загрузите xlsx файл для проверки корректность заполнения возраста во всем шаблоне.');
+  ctx.session.waitingForFile = 'validateChildrenConditions';
+});
+
+bot.action('validateUniqueIDs', (ctx) => {
+  ctx.reply('Загрузите xlsx файл для проверки корректность заполнения ИД во всех листах.');
+  ctx.session.waitingForFile = 'validateUniqueIDs';
+});
+
+
+
 // Кнопка возврата в меню выбора функции
 bot.action('backToMenu', (ctx) => {
   ctx.reply('Выберите действие:', Markup.inlineKeyboard([
@@ -113,7 +140,10 @@ bot.action('backToMenu', (ctx) => {
     [Markup.button.callback('Проверка на уникальность Группа-Порядок (Лечение)', 'checkUniqueMappingsTreatment')],
     [Markup.button.callback('Проверка на наличие одной основной альтернативы (Диагностика)', 'checkGroupsDiag')],
     [Markup.button.callback('Проверка на валидность 804 кода', 'checkServiceCodes')],
-    [Markup.button.callback('Проверка на заполненность обязательных столбцов', 'checkRequiredColumns')]
+    [Markup.button.callback('Проверка на заполненность обязательных столбцов', 'checkRequiredColumns')],
+    [Markup.button.callback('Проверка на корректность заполнения возраста', 'checkColumnDifference')],
+    [Markup.button.callback('Проверка на корректность заполнения возраста во всем шаблоне', 'validateChildrenConditions')],
+    [Markup.button.callback('Проверка на корректность заполнения ИД на всех листах', 'validateUniqueIDs')]
   ]));
   ctx.session.waitingForFile = false; // Сброс состояния ожидания файла при возврате в меню
 });
@@ -160,6 +190,17 @@ bot.on('document', async (ctx) => {
         case 'checkServiceCodes':
           await checkServiceCodes(ctx, workbook);
           break;
+        case 'checkColumnDifference':
+          await checkColumnDifference(ctx, workbook);
+          break;
+        case 'validateChildrenConditions':
+          await validateChildrenConditions(ctx, workbook);
+          break;
+        case 'validateUniqueIDs':
+          await validateUniqueIDs(ctx, workbook);
+          break;
+
+
         default:
           ctx.reply('Неизвестное действие. Пожалуйста, попробуйте снова.');
           break;
